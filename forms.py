@@ -4,11 +4,10 @@ from wtforms.validators import DataRequired, NumberRange
 
 
 class ArrowForm(FlaskForm):
-    direction = RadioField('Select the direction',
-                           choices=[(0, 'Left'), (1, 'Up'), (2, 'Down'), (3, 'Right')],
-                           validators=[DataRequired()],
-                           default=3)
-    submit = SubmitField('Move')
+    up = SubmitField('   UP   ')
+    down = SubmitField('DOWN')
+    left = SubmitField('LEFT')
+    right = SubmitField('RIGHT')
 
 
 class CustomGameForm(FlaskForm):

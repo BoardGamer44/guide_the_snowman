@@ -85,17 +85,12 @@ def gamestart(): # тут выбираеться фиксированное иг
             fieldlist = fieldlist_origin5
         elif level == 7:
             fieldlist = fieldlist_origin7
-
-        for i, string in enumerate(fieldlist): # заполнение поля картинками
+            
+        # заполнение поля картинками, код заменяеться на имя файла, который поздее будет превращен в url
+        filldict = {'1': 'snow', '0': 'rock', 's': 'snowman', 'f': 'finish'}
+        for i, string in enumerate(fieldlist):
             for j, cell in enumerate(string):
-                if cell == '1':
-                    fieldlist[i][j] = 'snow'
-                elif cell == '0':
-                    fieldlist[i][j] = 'rock'
-                elif cell == 's':
-                    fieldlist[i][j] = 'snowman'
-                else:
-                    fieldlist[i][j] = 'finish'
+                fieldlist[i][j] = filldict[cell]
 
         session['fieldlist'] = fieldlist
         session['count'] = 0

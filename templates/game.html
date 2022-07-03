@@ -13,14 +13,13 @@
 
 <form action="" method="post">
 {{ form.csrf_token }}
-{% for field in form if field.name != "csrf_token" and field.name != "submit" %}
-{{ field.label }}
-{{ field }}
-{% for error in field.errors %}
-{{ error }}
-{% endfor %}
-{% endfor %}
-{{ form.submit }}
+<table>
+<tr> <td></td> <td>{{ form.up }}</td> <td></td> </tr>
+
+<tr><td>{{ form.left }}</td> <td></td> <td>{{ form.right }}</td></tr>
+
+<tr> <td></td> <td>{{ form.down }}</td> <td></td> </tr>
+</table>
 </form>
 
 <link rel="stylesheet" href="{{  url_for('static', filename='style.css') }}">

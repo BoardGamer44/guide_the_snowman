@@ -15,8 +15,15 @@ def game(variable): # функция представления игрового
     form = ArrowForm()
 
     if form.validate_on_submit() and 'win in' not in message:
-        direction = form.direction.data
-        session['fieldlist'] = move_snowman(session['fieldlist'], direction) # вызов функции перемещения снеговика
+        # вызов функции перемещения снеговика
+        if form.up.data:
+            session['fieldlist'] = move_snowman(session['fieldlist'], '1')
+        if form.down.data:
+            session['fieldlist'] = move_snowman(session['fieldlist'], '2')
+        if form.left.data:
+            session['fieldlist'] = move_snowman(session['fieldlist'], '0')
+        if form.right.data:
+            session['fieldlist'] = move_snowman(session['fieldlist'], '3')
         message = session['message']
         fieldlist = session.get('fieldlist', None)
         return render_template('game.html',

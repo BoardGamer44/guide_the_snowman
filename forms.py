@@ -1,13 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, RadioField, IntegerField
 from wtforms.validators import DataRequired, NumberRange
+import random
 
 
 class ArrowForm(FlaskForm):
-    up = SubmitField('   UP   ')
-    down = SubmitField('DOWN')
-    left = SubmitField('LEFT')
-    right = SubmitField('RIGHT')
+    up = SubmitField(u'\u21E7')
+    down = SubmitField(u'\u21E9')
+    left = SubmitField(u'\u21E6')
+    right = SubmitField(u'\u21E8')
 
 
 class CustomGameForm(FlaskForm):
@@ -20,6 +21,7 @@ class CustomGameForm(FlaskForm):
                           choices=['lava', 'sand', 'rock'],
                           validators=[DataRequired()],
                           default=0)
+    seed = StringField('Random seed', validators=[DataRequired()], default=str(random.randint(1, 1000)))
     submit = SubmitField('Start Custom Game')
 
 

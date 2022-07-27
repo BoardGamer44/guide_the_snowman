@@ -5,8 +5,7 @@ import random
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
-# app.secret_key = 'session_secret_key'
+app.secret_key = 'session_secret_key'
 
 @app.route('/game_<variable>', methods=['GET', 'POST'])
 def game(variable): # функция представления игрового поля
@@ -24,18 +23,23 @@ def game(variable): # функция представления игрового
             session['fieldlist'] = move_snowman(session['fieldlist'], '0')
         if form.right.data:
             session['fieldlist'] = move_snowman(session['fieldlist'], '3')
+
+        # direction = form.direction.data
+        # session['fieldlist'] = move_snowman(session['fieldlist'], direction) # вызов функции перемещения снеговика
         message = session['message']
         fieldlist = session.get('fieldlist', None)
         return render_template('game.html',
                                form=form,
                                fieldlist=fieldlist,
-                               message=message)
+                               message=message,
+                               restart_message=session['restart_message'])
     elif form.validate_on_submit() and 'win in' in message: # после победы отправка формы вызывает редирект на выбор игры
         return redirect(url_for('gamestart'))
     return render_template('game.html',
                            form=form,
                            fieldlist=fieldlist,
-                           message=message)
+                           message=message,
+                           restart_message=session['restart_message'])
 
 
 @app.route('/customgame', methods=['GET', 'POST'])
@@ -46,12 +50,22 @@ def customgamestart():  # тут генерируеться игровое по�
         size = form.size.data
         rate = form.rate.data # вероятность в процентах с которой очередная клетка будет проходимой
         terrain = form.terrain.data # выбор картинки вместо камней
+        seed = form.seed.data
+        random.seed(seed)
         fieldlist_origin9 = [['snow' if random.randint(1, 100) < rate else terrain for x in range(size)]
                              for x in range(size)]
         fieldlist_origin9[1][1], fieldlist_origin9[size - 2][size - 2] = 'snowman', 'finish' # старт и финишь фиксированны
         session['fieldlist'] = fieldlist_origin9 # тут храниться поле
         session['count'] = 0 # тут храниться счетчик сделанных движений
         session['name'] = name # тут храниться имя игрока
+        session['seed'] = seed  # тут храниться случайное семя текущего уровня
+        session['restart_message']=f'If you want to replay this level later, enter these options when creating the customgame:' \
+                                   f' size of the level = {size}' \
+                                   f' snow rate = {rate}' \
+                                   f' random seed = {seed}'
+
+        session['size'] = size
+        session['rate'] = rate
         session['message'] = f'The custom game of {name} is start. Guide the snowman to the end.' # сообщение над полем
         return redirect(url_for('game', variable=f'custom_level_{size}x{size}')) # динамическая ссылка
     return render_template('customgame.html',
@@ -60,6 +74,7 @@ def customgamestart():  # тут генерируеться игровое по�
 
 @app.route('/', methods=['GET', 'POST'])
 def gamestart(): # тут выбираеться фиксированное игровое поле и имя игрока
+
     form = GameCreationForm()
     if form.validate_on_submit():
         name = form.name.data
@@ -92,7 +107,7 @@ def gamestart(): # тут выбираеться фиксированное иг
             fieldlist = fieldlist_origin5
         elif level == 7:
             fieldlist = fieldlist_origin7
-            
+
         # заполнение поля картинками, код заменяеться на имя файла, который поздее будет превращен в url
         filldict = {'1': 'snow', '0': 'rock', 's': 'snowman', 'f': 'finish'}
         for i, string in enumerate(fieldlist):
@@ -103,7 +118,7 @@ def gamestart(): # тут выбираеться фиксированное иг
         session['count'] = 0
         session['name'] = name
         session['message'] = f'The game of {name} is start. Guide the snowman to the end.'
-
+        restart_message=session['restart_message'] = ''
         return redirect(url_for('game', variable=f'level_{level}x{level}'))
 
     return render_template('index.html',
